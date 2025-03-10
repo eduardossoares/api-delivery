@@ -7,7 +7,8 @@ export class ReadItemsFromOrderService {
                 order_id: order_id
             },
             include: {
-                product: true
+                product: true,
+                order: true
             },
         });
         return readItems;

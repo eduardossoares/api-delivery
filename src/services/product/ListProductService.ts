@@ -11,6 +11,8 @@ export class ListProductService {
                 name: true,
                 description: true,
                 price: true,
+                banner: true,
+                category_id: true
             }
         });
         return products;
