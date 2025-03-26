@@ -29,6 +29,7 @@ export class CreateOrderService {
                 payment_type: payment_type
             },
             select: {
+                id: true,
                 name: true,
                 phone: true,
                 street_adress: true,
