@@ -23,13 +23,15 @@ export class AuthUserService {
 
         const passwordMatch = await compare(password, userExists.password);
         if(!passwordMatch) throw new Error(invalidUserMessage);
+        const secret = process.env.JWT_SECRET;
+        if(!secret) throw new Error("Invalid JWT");
 
         const token = sign(
             {
                 name: userExists.name,
                 email: userExists.email
             },
-            process.env.JWT_SECRET,
+            secret,
             {
                 subject: userExists.id,
                 expiresIn: "30d"

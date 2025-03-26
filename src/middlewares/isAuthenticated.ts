@@ -12,9 +12,12 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
         return 
     }
     const token = authToken.split(" ")[1];
+    const secret = process.env.JWT_SECRET;
+
+    if(!secret) throw new Error("JWT não configurado.");
 
     try {
-        const { sub } = verify(token, process.env.JWT_SECRET) as Payload;
+        const { sub } = verify(token, secret) as Payload;
         req.user_id = sub;
 
         next();

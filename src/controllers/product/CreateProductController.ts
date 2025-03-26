@@ -21,15 +21,23 @@ export class CreateProductController {
       });
 
       res.json(product);
-
     } catch (error) {
       // Deletar o arquivo em caso de erro
       if (req.file) {
-        const filePath = path.resolve(__dirname, "..", "..", "..", "tmp", req.file.filename);
+        const filePath = path.resolve(
+          __dirname,
+          "..",
+          "..",
+          "..",
+          "tmp",
+          req.file.filename
+        );
         fs.unlinkSync(filePath); // Deleta o arquivo
       }
 
-      res.status(400).json({ message: error.message });
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
     }
   }
 }
