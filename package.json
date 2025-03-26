@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsnd src/server.ts",
+    "dev": "tsnd api/server.ts",
     "start": "node dist/server.js",
     "build": "tsc"
   },

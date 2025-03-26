@@ -31,10 +31,13 @@ class AuthUserService {
             const passwordMatch = yield (0, bcryptjs_1.compare)(password, userExists.password);
             if (!passwordMatch)
                 throw new Error(invalidUserMessage);
+            const secret = process.env.JWT_SECRET;
+            if (!secret)
+                throw new Error("Invalid JWT");
             const token = (0, jsonwebtoken_1.sign)({
                 name: userExists.name,
                 email: userExists.email
-            }, process.env.JWT_SECRET, {
+            }, secret, {
                 subject: userExists.id,
                 expiresIn: "30d"
             });

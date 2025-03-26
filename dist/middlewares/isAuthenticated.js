@@ -9,8 +9,11 @@ const isAuthenticated = (req, res, next) => {
         return;
     }
     const token = authToken.split(" ")[1];
+    const secret = process.env.JWT_SECRET;
+    if (!secret)
+        throw new Error("JWT não configurado.");
     try {
-        const { sub } = (0, jsonwebtoken_1.verify)(token, process.env.JWT_SECRET);
+        const { sub } = (0, jsonwebtoken_1.verify)(token, secret);
         req.user_id = sub;
         next();
     }

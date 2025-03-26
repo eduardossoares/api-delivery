@@ -39,7 +39,9 @@ class CreateProductController {
                     const filePath = path_1.default.resolve(__dirname, "..", "..", "..", "tmp", req.file.filename);
                     fs_1.default.unlinkSync(filePath); // Deleta o arquivo
                 }
-                res.status(400).json({ message: error.message });
+                if (error instanceof Error) {
+                    console.error(error.message);
+                }
             }
         });
     }
