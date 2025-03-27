@@ -3,7 +3,7 @@ import "express-async-errors";
 import cors from "cors";
 import path from "path";
 
-import { router } from "./routes";
+import { router } from "../src/routes";
 
 const app = express();
 app.use(express.json());
