@@ -3,8 +3,6 @@ import { CreateProductService } from "../../../src/services/product/CreateProduc
 
 import { cloudinaryConfig } from "./../../config/cloudinary";
 
-import fs from "fs";
-import path from "path";
 import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
 
 export class CreateProductController {
@@ -12,7 +10,6 @@ export class CreateProductController {
     const { name, price, description, category_id } = req.body;
 
     if (!req.file) throw new Error("Invalid image file");
-
     const file = req.file;
 
     try {
@@ -27,8 +24,7 @@ export class CreateProductController {
               if (error) {
                 reject(error);
               } else {
-                if (!resolve || !result) return;
-                resolve(result.secure_url); // URL pública da Cloudinary
+                resolve(result!.secure_url); // Non-null assertion já que result é garantido se não houver erro
               }
             }
           )
@@ -48,6 +44,9 @@ export class CreateProductController {
       res.json(product);
     } catch (error) {
       console.log(error);
+      res.status(500).json({
+        error: "Erro ao processar upload ou criação!",
+      });
     }
   }
 }

@@ -36,7 +36,8 @@ export class CreateProductService {
                 price: true, 
                 description: true,
                 category_id: true,
-                created_at: true
+                created_at: true,
+                banner: true,
             }
         });
 

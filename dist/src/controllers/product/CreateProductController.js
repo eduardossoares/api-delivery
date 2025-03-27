@@ -8,22 +8,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateProductController = void 0;
 const CreateProductService_1 = require("../../../src/services/product/CreateProductService");
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
+const cloudinary_1 = require("./../../config/cloudinary");
 class CreateProductController {
     handle(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { name, price, description, category_id } = req.body;
             if (!req.file)
                 throw new Error("Invalid image file");
-            const { filename: banner } = req.file;
+            const file = req.file;
             try {
+                const uploadPromise = new Promise((resolve, reject) => {
+                    cloudinary_1.cloudinaryConfig.uploader
+                        .upload_stream({ resource_type: "image" }, (error, result) => {
+                        if (error) {
+                            reject(error);
+                        }
+                        else {
+                            if (!resolve || !result)
+                                return;
+                            resolve(result.secure_url); // URL pública da Cloudinary
+                        }
+                    })
+                        .end(file.buffer);
+                });
+                const banner = yield uploadPromise;
                 const product = yield new CreateProductService_1.CreateProductService().execute({
                     name,
                     price,
@@ -34,14 +45,7 @@ class CreateProductController {
                 res.json(product);
             }
             catch (error) {
-                // Deletar o arquivo em caso de erro
-                if (req.file) {
-                    const filePath = path_1.default.resolve(__dirname, "..", "..", "..", "tmp", req.file.filename);
-                    fs_1.default.unlinkSync(filePath); // Deleta o arquivo
-                }
-                if (error instanceof Error) {
-                    console.error(error.message);
-                }
+                console.log(error);
             }
         });
     }
