@@ -14,10 +14,10 @@ datasource db {
 }
 
 model User {
-  id String @id @default(uuid())
-  name String
-  email String
-  password String
+  id         String   @id @default(uuid())
+  name       String
+  email      String
+  password   String
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
@@ -25,62 +25,62 @@ model User {
 }
 
 model Category {
-  id String @id @default(uuid())
-  name String
+  id         String   @id @default(uuid())
+  name       String
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  @@map("categories")
-
   products Product[]
+
+  @@map("categories")
 }
 
 model Product {
-  id String @id @default(uuid())
-  name String
-  price String
+  id          String   @id @default(uuid())
+  name        String
+  price       String
   description String
-  banner String
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  banner      String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
 
   category Category @relation(fields: [category_id], references: [id])
- 
-  @@map("products")
 
   category_id String
-  items Item[]
+  items       Item[]
+
+  @@map("products")
 }
 
 model Order {
-  id String @id @default(uuid())
-  name String
-  phone String
-  street_adress String
-  number_adress String
+  id               String  @id @default(uuid())
+  name             String
+  phone            String
+  street_adress    String
+  number_adress    String
   reference_adress String?
-  note String?
-  payment_type String
-  status Boolean @default(false)
-  draft Boolean @default(true)
+  note             String?
+  payment_type     String
+  status           Boolean @default(false)
+  draft            Boolean @default(true)
 
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  @@map("orders")
-
   items Item[]
+
+  @@map("orders")
 }
 
 model Item {
-  id String @id @default(uuid())
-  amount Int @default(1)
+  id     String @id @default(uuid())
+  amount Int    @default(1)
 
-  order Order @relation(fields: [order_id], references: [id])
+  order   Order   @relation(fields: [order_id], references: [id])
   product Product @relation(fields: [product_id], references: [id])
-  
-  @@map("items")
 
-  order_id String
+  order_id   String
   product_id String
+
+  @@map("items")
 }
