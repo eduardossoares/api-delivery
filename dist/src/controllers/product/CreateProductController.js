@@ -11,7 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateProductController = void 0;
 const CreateProductService_1 = require("../../../src/services/product/CreateProductService");
-const cloudinary_1 = require("./../../config/cloudinary");
+const cloudinary_1 = require("cloudinary");
+cloudinary_1.v2.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 class CreateProductController {
     handle(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -21,15 +26,13 @@ class CreateProductController {
             const file = req.file;
             try {
                 const uploadPromise = new Promise((resolve, reject) => {
-                    cloudinary_1.cloudinaryConfig.uploader
+                    cloudinary_1.v2.uploader
                         .upload_stream({ resource_type: "image" }, (error, result) => {
                         if (error) {
                             reject(error);
                         }
                         else {
-                            if (!resolve || !result)
-                                return;
-                            resolve(result.secure_url); // URL pública da Cloudinary
+                            resolve(result.secure_url); // Non-null assertion já que result é garantido se não houver erro
                         }
                     })
                         .end(file.buffer);
@@ -46,6 +49,9 @@ class CreateProductController {
             }
             catch (error) {
                 console.log(error);
+                res.status(500).json({
+                    error: "Erro ao processar upload ou criação!",
+                });
             }
         });
     }

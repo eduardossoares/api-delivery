@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
 import { CreateProductService } from "../../../src/services/product/CreateProductService";
 
-import { cloudinaryConfig } from "./../../config/cloudinary";
-
+import { v2 as cloudinary } from "cloudinary";
 import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export class CreateProductController {
   async handle(req: Request, res: Response) {
@@ -14,7 +19,7 @@ export class CreateProductController {
 
     try {
       const uploadPromise = new Promise<string>((resolve, reject) => {
-        cloudinaryConfig.uploader
+        cloudinary.uploader
           .upload_stream(
             { resource_type: "image" },
             (
