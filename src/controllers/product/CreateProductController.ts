@@ -1,7 +1,11 @@
 import { Request, Response } from "express";
 import { CreateProductService } from "../../../src/services/product/CreateProductService";
+
+import { cloudinaryConfig } from "./../../config/cloudinary";
+
 import fs from "fs";
 import path from "path";
+import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
 
 export class CreateProductController {
   async handle(req: Request, res: Response) {
@@ -9,9 +13,30 @@ export class CreateProductController {
 
     if (!req.file) throw new Error("Invalid image file");
 
-    const { filename: banner } = req.file;
+    const file = req.file;
 
     try {
+      const uploadPromise = new Promise<string>((resolve, reject) => {
+        cloudinaryConfig.uploader
+          .upload_stream(
+            { resource_type: "image" },
+            (
+              error: UploadApiErrorResponse | undefined,
+              result: UploadApiResponse | undefined
+            ) => {
+              if (error) {
+                reject(error);
+              } else {
+                if (!resolve || !result) return;
+                resolve(result.secure_url); // URL pública da Cloudinary
+              }
+            }
+          )
+          .end(file.buffer);
+      });
+
+      const banner = await uploadPromise;
+
       const product = await new CreateProductService().execute({
         name,
         price,
@@ -22,22 +47,7 @@ export class CreateProductController {
 
       res.json(product);
     } catch (error) {
-      // Deletar o arquivo em caso de erro
-      if (req.file) {
-        const filePath = path.resolve(
-          __dirname,
-          "..",
-          "..",
-          "..",
-          "tmp",
-          req.file.filename
-        );
-        fs.unlinkSync(filePath); // Deleta o arquivo
-      }
-
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
+      console.log(error);
     }
   }
 }
